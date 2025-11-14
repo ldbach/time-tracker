@@ -21,7 +21,7 @@ The backend is built with **Rust** and **Axum**, and the frontend is built with 
 Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/time-tracker.git
+git clone https://github.com/ldbach/time-tracker.git
 cd time-tracker
 ```
 
