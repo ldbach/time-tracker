@@ -1,0 +1,14 @@
+C:\Users\ducba\Desktop\Project\Time_Tracker\time_tracker_backend\target\debug\deps\serde-52ea4e8a49bf3185.d: C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\lib.rs C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\integer128.rs C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\mod.rs C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\de.rs C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\ser.rs C:\Users\ducba\Desktop\Project\Time_Tracker\time_tracker_backend\target\debug\build\serde-058e13a7edcc7dc6\out/private.rs
+
+C:\Users\ducba\Desktop\Project\Time_Tracker\time_tracker_backend\target\debug\deps\libserde-52ea4e8a49bf3185.rlib: C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\lib.rs C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\integer128.rs C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\mod.rs C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\de.rs C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\ser.rs C:\Users\ducba\Desktop\Project\Time_Tracker\time_tracker_backend\target\debug\build\serde-058e13a7edcc7dc6\out/private.rs
+
+C:\Users\ducba\Desktop\Project\Time_Tracker\time_tracker_backend\target\debug\deps\libserde-52ea4e8a49bf3185.rmeta: C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\lib.rs C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\integer128.rs C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\mod.rs C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\de.rs C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\ser.rs C:\Users\ducba\Desktop\Project\Time_Tracker\time_tracker_backend\target\debug\build\serde-058e13a7edcc7dc6\out/private.rs
+
+C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\lib.rs:
+C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\integer128.rs:
+C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\mod.rs:
+C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\de.rs:
+C:\Users\ducba\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\ser.rs:
+C:\Users\ducba\Desktop\Project\Time_Tracker\time_tracker_backend\target\debug\build\serde-058e13a7edcc7dc6\out/private.rs:
+
+# env-dep:OUT_DIR=C:\\Users\\ducba\\Desktop\\Project\\Time_Tracker\\time_tracker_backend\\target\\debug\\build\\serde-058e13a7edcc7dc6\\out

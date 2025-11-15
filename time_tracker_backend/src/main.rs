@@ -10,13 +10,43 @@ use axum::{
     http::{Request, Response, header},
 };
 use axum::body::Body;
+use sqlx::sqlite::{SqliteConnectOptions, SqlitePool};
+use sqlx::ConnectOptions;
+use std::str::FromStr;
 
 #[tokio::main]
 async fn main() {
+    // Make sure folder "data" exists before running
+    std::fs::create_dir_all("data").expect("Failed to create data folder");
+
+    let opts = SqliteConnectOptions::from_str("sqlite:data/sessions.db")
+        .expect("Failed to parse database options")
+        .create_if_missing(true);
+
+    let db = SqlitePool::connect_with(opts)
+    .await
+    .expect("Failed to connect to SQLite");
+
+    // Create the sessions table if it doesn't exist
+    sqlx::query(
+        r#"
+        CREATE TABLE IF NOT EXISTS sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            start_time TEXT NOT NULL,
+            end_time TEXT NOT NULL,
+            duration_seconds INTEGER NOT NULL
+        )
+        "#
+    )
+    .execute(&db)
+    .await
+    .expect("Failed to create sessions table");
+
     let state: SharedState = Arc::new(Mutex::new(SessionState {
         running: false,
         start_time: None,
         sessions: vec![],
+        db, // store the pool in the state
     }));
 
     let app = Router::new()

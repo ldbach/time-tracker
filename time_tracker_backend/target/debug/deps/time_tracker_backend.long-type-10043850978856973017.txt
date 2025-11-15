@@ -1,0 +1,2 @@
+axum::middleware::FromFn<fn(axum::http::Request<hyper::Body>, Next) -> impl Future<Output = axum::http::Response<hyper::Body>> {cors_middleware}, (), Route, _>
+axum::middleware::FromFn<fn(axum::http::Request<hyper::Body>, Next) -> impl Future<Output = axum::http::Response<hyper::Body>> {cors_middleware}, (), Route, _>: Service<axum::http::Request<axum::body::Body>>

@@ -1,0 +1,2 @@
+fn(Arc<std::sync::Mutex<SessionState>>, axum::extract::Path<usize>) -> impl Future<Output = StatusCode> {delete_session}
+fn(Arc<std::sync::Mutex<SessionState>>, axum::extract::Path<usize>) -> impl Future<Output = StatusCode> {delete_session}: Handler<_, _>

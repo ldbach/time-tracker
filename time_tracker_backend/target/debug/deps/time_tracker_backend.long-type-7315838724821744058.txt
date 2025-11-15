@@ -1,0 +1,2 @@
+fn(Extension<Arc<std::sync::Mutex<SessionState>>>) -> impl Future<Output = Json<Vec<Session>>> {list_sessions}
+fn(Extension<Arc<std::sync::Mutex<SessionState>>>) -> impl Future<Output = Json<Vec<Session>>> {list_sessions}: Handler<_, _>

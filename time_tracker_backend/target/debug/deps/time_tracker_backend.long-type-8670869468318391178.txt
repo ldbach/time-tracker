@@ -1,0 +1,2 @@
+fn(Arc<std::sync::Mutex<SessionState>>, Json<SessionPayload>) -> impl Future<Output = StatusCode> {save_session}
+fn(Arc<std::sync::Mutex<SessionState>>, Json<SessionPayload>) -> impl Future<Output = StatusCode> {save_session}: Handler<_, _>
