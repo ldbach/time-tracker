@@ -25,3 +25,15 @@ Content-Type: application/json
 ### Get status again
 GET http://127.0.0.1:3001/status
 Accept: application/json
+
+###
+
+### List All Sessions
+GET http://127.0.0.1:3001/sessions
+Accept: application/json
+
+###
+
+### Delete the first Session
+DELETE http://127.0.0.1:3001/sessions/1
+Accept: application/json

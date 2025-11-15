@@ -2,8 +2,8 @@ use crate::state::{Session, SharedState};
 use axum::{http::StatusCode, Json};
 use chrono::{Utc, DateTime};
 use serde::Serialize;
-use axum::{response::IntoResponse, extract::State};
-use sqlx::Row;
+use axum::{response::IntoResponse, extract::State, extract::Path};
+use sqlx::{Row, SqlitePool};
 
 #[derive(Serialize)]
 pub struct StatusResponse {
@@ -118,4 +118,23 @@ pub async fn list_sessions(state: SharedState) -> impl IntoResponse {
         .collect();
 
     Json(sessions)
+}
+
+// Delete session
+pub async fn delete_session(
+    id: i64,               // just i64
+    state: SharedState,
+) -> impl IntoResponse {
+    let s = state.lock().await;
+    let db: &SqlitePool = &s.db;
+
+    let result = sqlx::query("DELETE FROM sessions WHERE id = ?1")
+        .bind(id)
+        .execute(db)
+        .await;
+
+    match result {
+        Ok(_) => (axum::http::StatusCode::OK, Json(serde_json::json!({"deleted": id}))),
+        Err(e) => (axum::http::StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": e.to_string()}))),
+    }
 }

@@ -15,6 +15,9 @@ use sqlx::ConnectOptions;
 use std::str::FromStr;
 use axum::extract::Extension;
 use tokio::sync::Mutex;
+use axum::routing::delete; // for DELETE routes
+use axum::extract::Path;   // for extracting path parameter
+use axum::http::Method;
 
 #[tokio::main]
 async fn main() {
@@ -57,6 +60,7 @@ async fn main() {
     .route("/stop", post(stop_session_handler))
     .route("/status", get(get_status_handler))
     .route("/sessions", get(list_sessions_handler))
+    .route("/sessions/:id", delete(delete_session_handler))
     .layer(axum::middleware::from_fn(cors_middleware))
     .layer(Extension(state.clone()));
 
@@ -74,24 +78,21 @@ async fn root() -> &'static str {
 
 // Simple CORS middleware compatible with Axum 0.7
 async fn cors_middleware(req: Request<Body>, next: Next) -> Response<Body> {
-    // Pass the request to the next layer/handler
+    if req.method() == Method::OPTIONS {
+        // Respond directly to preflight requests
+        let mut response = Response::new(Body::empty());
+        let headers = response.headers_mut();
+        headers.insert(header::ACCESS_CONTROL_ALLOW_ORIGIN, "*".parse().unwrap());
+        headers.insert(header::ACCESS_CONTROL_ALLOW_METHODS, "GET,POST,DELETE,OPTIONS".parse().unwrap());
+        headers.insert(header::ACCESS_CONTROL_ALLOW_HEADERS, "*".parse().unwrap());
+        return response;
+    }
+
     let mut response = next.run(req).await;
-
-    // Add CORS headers so the browser allows access
-    response.headers_mut().insert(
-        header::ACCESS_CONTROL_ALLOW_ORIGIN,
-        "*".parse().unwrap(),
-    );
-    response.headers_mut().insert(
-        header::ACCESS_CONTROL_ALLOW_METHODS,
-        "GET,POST,OPTIONS".parse().unwrap(),
-    );
-    response.headers_mut().insert(
-        header::ACCESS_CONTROL_ALLOW_HEADERS,
-        "*".parse().unwrap(),
-    );
-
-    // Return the modified response
+    let headers = response.headers_mut();
+    headers.insert(header::ACCESS_CONTROL_ALLOW_ORIGIN, "*".parse().unwrap());
+    headers.insert(header::ACCESS_CONTROL_ALLOW_METHODS, "GET,POST,DELETE,OPTIONS".parse().unwrap());
+    headers.insert(header::ACCESS_CONTROL_ALLOW_HEADERS, "*".parse().unwrap());
     response
 }
 
@@ -110,4 +111,11 @@ async fn get_status_handler(Extension(state): Extension<SharedState>) -> impl ax
 
 async fn list_sessions_handler(Extension(state): Extension<SharedState>) -> impl axum::response::IntoResponse {
     routes::list_sessions(state).await
+}
+
+async fn delete_session_handler(
+    Path(id): Path<i64>,
+    Extension(state): Extension<SharedState>,
+) -> impl axum::response::IntoResponse {
+    routes::delete_session(id, state).await
 }

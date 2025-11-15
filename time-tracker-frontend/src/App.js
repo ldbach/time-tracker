@@ -15,6 +15,7 @@ function App() {
 
     // Map backend fields to frontend expected fields
     const mapped = data.map(s => ({
+      id: s.id,
       start: s.start_time,
       end: s.end_time,
       duration: s.duration_seconds,
@@ -93,9 +94,21 @@ function App() {
     fetchSessions(); // refresh completed sessions from backend
   };
 
-  // Delete session from frontend only
-  const deleteSession = (index) => {
-    setSessions(prev => prev.filter((_, i) => i !== index));
+  // Delete session from backend and frontend
+  const deleteSession = async (id) => {
+    setSessions(prev => prev.filter(s => s.id !== id)); // remove immediately
+    console.log(id);
+    try {
+      // Call backend to delete session
+      await fetch(`http://127.0.0.1:3001/sessions/${id}`, {
+        method: "DELETE",
+      });
+
+      // Refresh sessions from backend
+      fetchSessions();
+    } catch (err) {
+      console.error("Failed to delete session:", err);
+    }
   };
 
   return (
@@ -122,7 +135,7 @@ function App() {
             Start: {formatTime(s.start)}<br />
             End: {formatTime(s.end)}<br />
             Duration: <b>{s.duration}</b> seconds<br />
-            <button onClick={() => deleteSession(idx)}>Delete</button>
+            <button onClick={() => deleteSession(s.id)}>Delete</button>
           </li>
         ))}
       </ul>
