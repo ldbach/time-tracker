@@ -4,7 +4,7 @@ mod routes;
 use axum::{routing::{get, post}, Router};
 use state::{SessionState, SharedState};
 use routes::{start_session, stop_session, get_status};
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use axum::{
     middleware::Next,
     http::{Request, Response, header},
@@ -13,6 +13,8 @@ use axum::body::Body;
 use sqlx::sqlite::{SqliteConnectOptions, SqlitePool};
 use sqlx::ConnectOptions;
 use std::str::FromStr;
+use axum::extract::Extension;
+use tokio::sync::Mutex;
 
 #[tokio::main]
 async fn main() {
@@ -50,20 +52,12 @@ async fn main() {
     }));
 
     let app = Router::new()
-        .route("/", get(root))
-        .route("/start", post({
-            let state = state.clone();
-            move || start_session(state.clone())
-        }))
-        .route("/stop", post({
-            let state = state.clone();
-            move || stop_session(state.clone())
-        }))
-        .route("/status", get({
-            let state = state.clone();
-            move || get_status(state.clone())
-        }))
-        .layer(axum::middleware::from_fn(cors_middleware));
+    .route("/", get(root))
+    .route("/start", post(start_session_handler))
+    .route("/stop", post(stop_session_handler))
+    .route("/status", get(get_status_handler))
+    .layer(axum::middleware::from_fn(cors_middleware))
+    .layer(Extension(state.clone()));
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3001")
         .await
@@ -98,4 +92,17 @@ async fn cors_middleware(req: Request<Body>, next: Next) -> Response<Body> {
 
     // Return the modified response
     response
+}
+
+// Async handlers
+async fn stop_session_handler(Extension(state): Extension<SharedState>) -> impl axum::response::IntoResponse {
+    routes::stop_session(state).await
+}
+
+async fn start_session_handler(Extension(state): Extension<SharedState>) -> impl axum::response::IntoResponse {
+    routes::start_session(state).await
+}
+
+async fn get_status_handler(Extension(state): Extension<SharedState>) -> impl axum::response::IntoResponse {
+    routes::get_status(state).await
 }

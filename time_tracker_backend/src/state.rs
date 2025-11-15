@@ -1,6 +1,7 @@
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use chrono::{DateTime, Utc};
 use sqlx::sqlite::SqlitePool;
+use tokio::sync::Mutex;
 
 #[derive(Clone, Debug)]
 pub struct Session {
@@ -17,4 +18,5 @@ pub struct SessionState {
     pub db: SqlitePool,
 }
 
+// SharedState is now Arc<tokio::Mutex<SessionState>>
 pub type SharedState = Arc<Mutex<SessionState>>;
