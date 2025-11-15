@@ -56,6 +56,7 @@ async fn main() {
     .route("/start", post(start_session_handler))
     .route("/stop", post(stop_session_handler))
     .route("/status", get(get_status_handler))
+    .route("/sessions", get(list_sessions_handler))
     .layer(axum::middleware::from_fn(cors_middleware))
     .layer(Extension(state.clone()));
 
@@ -105,4 +106,8 @@ async fn start_session_handler(Extension(state): Extension<SharedState>) -> impl
 
 async fn get_status_handler(Extension(state): Extension<SharedState>) -> impl axum::response::IntoResponse {
     routes::get_status(state).await
+}
+
+async fn list_sessions_handler(Extension(state): Extension<SharedState>) -> impl axum::response::IntoResponse {
+    routes::list_sessions(state).await
 }

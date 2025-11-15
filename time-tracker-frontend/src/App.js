@@ -9,6 +9,20 @@ function App() {
 
   const [sessions, setSessions] = useState([]);
 
+  const fetchSessions = async () => {
+    const res = await fetch("http://127.0.0.1:3001/sessions");
+    const data = await res.json();
+
+    // Map backend fields to frontend expected fields
+    const mapped = data.map(s => ({
+      start: s.start_time,
+      end: s.end_time,
+      duration: s.duration_seconds,
+    }));
+
+    setSessions(mapped); // data should be an array of sessions from backend
+  };
+
   // Helper: format ISO datetime string nicely
   const formatDateTime = (isoString) => {
     if (!isoString) return "-";
@@ -39,6 +53,8 @@ function App() {
     fetch("http://127.0.0.1:3001/status")
       .then(res => res.json())
       .then(data => setStatus(data));
+
+    fetchSessions(); // load completed sessions from backend
   }, []);
 
   // Live timer that updates every second
@@ -66,27 +82,15 @@ function App() {
   // Stop session
   const stopSession = async () => {
     const res = await fetch("http://127.0.0.1:3001/stop", { method: "POST" });
-    const data = await res.json();
-
-    if (data.duration_seconds != null) {
-      const startTime = new Date(Date.now() - data.duration_seconds * 1000).toISOString();
-      const endTime = new Date().toISOString();
-
-      setSessions(prev => [
-        ...prev,
-        {
-          start: startTime,
-          end: endTime,
-          duration: data.duration_seconds,
-        },
-      ]);
-    }
+    await res.json();
 
     setStatus({
       running: false,
       start_time: null,
       duration_seconds: 0,
     });
+
+    fetchSessions(); // refresh completed sessions from backend
   };
 
   // Delete session from frontend only
