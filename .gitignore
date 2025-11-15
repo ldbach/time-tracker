@@ -2,30 +2,30 @@
 # Frontend
 # ========================
 # dependencies
-/frontend/node_modules
-/frontend/.pnp
-/frontend/.pnp.js
+/time-tracker-frontend/node_modules
+/time-tracker-frontend/.pnp
+/time-tracker-frontend/.pnp.js
 # production
-/frontend/build
+/time-tracker-frontend/build
 # testing
-/frontend/coverage
+/time-tracker-frontend/coverage
 # misc
-/frontend/.env.local
-/frontend/.env.development.local
-/frontend/.env.test.local
-/frontend/.env.production.local
+/time-tracker-frontend/.env.local
+/time-tracker-frontend/.env.development.local
+/time-tracker-frontend/.env.test.local
+/time-tracker-frontend/.env.production.local
 
-/frontend/npm-debug.log*
-/frontend/yarn-debug.log*
-/frontend/yarn-error.log*
+/time-tracker-frontend/npm-debug.log*
+/time-tracker-frontend/yarn-debug.log*
+/time-tracker-frontend/yarn-error.log*
 
 # ========================
 # Backend
 # ========================
-/backend/target
-/backend/data
-/backend/**/*.db
-/backend/.env
+/time_tracker_backend/target/
+/time_tracker_backend/data
+/time_tracker_backend/**/*.db
+/time_tracker_backend/.env
 
 # ========================
 # System files
