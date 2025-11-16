@@ -21,7 +21,6 @@
 # ========================
 /time_tracker_backend/target/
 /time_tracker_backend/data
-/time_tracker_backend/**/*.db
 /time_tracker_backend/.env
 
 # ========================
