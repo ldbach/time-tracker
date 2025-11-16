@@ -1,4 +1,10 @@
 import React, { useState, useEffect } from "react";
+import {
+  formatDateTime,
+  formatTime,
+  formatDate,
+  formatWeekday,
+} from "./utils/date";
 
 function App() {
   const BASE_URL = process.env.REACT_APP_BACKEND_URL;
@@ -25,31 +31,6 @@ function App() {
     }));
 
     setSessions(mapped); // data should be an array of sessions from backend
-  };
-
-  // Helper: format ISO datetime string nicely
-  const formatDateTime = (isoString) => {
-    if (!isoString) return "-";
-    const date = new Date(isoString);
-    return date.toLocaleString(); // local timezone
-    // For fixed UTC: return date.toISOString().replace("T", " ").replace("Z", "");
-  };
-
-  const formatTime = (isoString) => {
-    if (!isoString) return "-";
-    return new Date(isoString).toLocaleTimeString();
-  };
-
-  const formatDate = (isoString) => {
-    if (!isoString) return "-";
-    const date = new Date(isoString);
-    return date.toLocaleDateString();
-  };
-
-  const formatWeekday = (isoString) => {
-    if (!isoString) return "-";
-    const date = new Date(isoString);
-    return date.toLocaleDateString(undefined, { weekday: "long" });
   };
 
   // Load initial status from backend
