@@ -2,7 +2,7 @@ use crate::state::{Session, SharedState};
 use axum::{http::StatusCode, Json};
 use chrono::{Utc, DateTime};
 use serde::Serialize;
-use axum::{response::IntoResponse, extract::State, extract::Path};
+use axum::response::IntoResponse;
 use sqlx::{Row, SqlitePool};
 
 #[derive(Serialize)]
@@ -23,7 +23,7 @@ pub struct SessionResponse {
 
 // Start session
 pub async fn start_session(state: SharedState) -> (StatusCode, Json<StatusResponse>) {
-    let mut s = state.lock().await;
+    let mut s = state.lock().await; // lock the shared state
     s.running = true;
     s.start_time = Some(Utc::now());
 
@@ -40,21 +40,18 @@ pub async fn start_session(state: SharedState) -> (StatusCode, Json<StatusRespon
 
 // Stop session
 pub async fn stop_session(state: SharedState) -> (StatusCode, Json<StatusResponse>) {
-    let mut s = state.lock().await;
+    let mut s = state.lock().await; // lock the shared state
     let end = Utc::now();
-
     let duration = s.start_time.map(|start| (end - start).num_seconds());
 
     if let Some(start) = s.start_time {
         let duration_val = duration.unwrap_or(0);
-
         // Push to in-memory session list
         s.sessions.push(Session {
             start,
             end,
             duration: duration_val,
         });
-
         // Save to database
         let _ = sqlx::query(
             "INSERT INTO sessions (start_time, end_time, duration_seconds) VALUES (?1, ?2, ?3)"
@@ -82,7 +79,7 @@ pub async fn stop_session(state: SharedState) -> (StatusCode, Json<StatusRespons
 
 // Get current status
 pub async fn get_status(state: SharedState) -> Json<StatusResponse> {
-    let mut s = state.lock().await;
+    let s = state.lock().await; // lock the shared state
     let duration = s.start_time.map(|start| (Utc::now() - start).num_seconds());
 
     Json(StatusResponse {
@@ -95,37 +92,37 @@ pub async fn get_status(state: SharedState) -> Json<StatusResponse> {
 
 // List sessions from DB
 pub async fn list_sessions(state: SharedState) -> impl IntoResponse {
-    let s = state.lock().await;
+    let s = state.lock().await; // lock the shared state
 
     let rows = sqlx::query(
         r#"SELECT id, start_time, end_time, duration_seconds
            FROM sessions
            ORDER BY id DESC"#
     )
-    .fetch_all(&s.db)
+    .fetch_all(&s.db) // executes the query and returns all rows as Vec<SqliteRow>
     .await
     .unwrap();
 
-    // Convert SqliteRow → SessionResponse
+    // Convert SqliteRow to SessionResponse
     let sessions: Vec<SessionResponse> = rows
-        .into_iter()
+        .into_iter() // iterate over all SqliteRows
         .map(|row| SessionResponse {
             id: row.get::<i64, _>("id"),
             start_time: row.get::<String, _>("start_time"),
             end_time: row.get::<String, _>("end_time"),
             duration_seconds: row.get::<i64, _>("duration_seconds"),
         })
-        .collect();
+        .collect(); // gather all SessionResponse structs into a Vec<SessionResponse>
 
     Json(sessions)
 }
 
 // Delete session
 pub async fn delete_session(
-    id: i64,               // just i64
+    id: i64,
     state: SharedState,
 ) -> impl IntoResponse {
-    let s = state.lock().await;
+    let s = state.lock().await; // lock the shared state
     let db: &SqlitePool = &s.db;
 
     let result = sqlx::query("DELETE FROM sessions WHERE id = ?1")

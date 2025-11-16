@@ -10,6 +10,7 @@ pub struct Session {
     pub duration: i64,
 }
 
+// Current state of session
 #[derive(Debug)]
 pub struct SessionState {
     pub running: bool,
@@ -18,5 +19,6 @@ pub struct SessionState {
     pub db: SqlitePool,
 }
 
-// SharedState is now Arc<tokio::Mutex<SessionState>>
+// Arc: allows shared ownership across tasks
+// Mutex: allows safe mutation of the shared data
 pub type SharedState = Arc<Mutex<SessionState>>;
