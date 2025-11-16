@@ -1,7 +1,7 @@
 # Time Tracker
 Time Tracker is a simple web application to track time spent on tasks. It allows you to start a session, stop it, and view completed sessions with start time, end time, and duration.  
 
-The backend is built with **Rust** and **Axum**, and the frontend is built with **React**.
+The backend is built with **Rust** and **Axum**, and the frontend is built with **React**. The frontend is deployed to GitHub Pages from the `prod` branch.
 
 ---
 
@@ -54,13 +54,23 @@ npm install
 npm start
 ```
 
+## Deployment
+
+The frontend is deployed automatically to GitHub Pages from the prod branch.
+Visit your app at: https://ldbach.github.io/time-tracker/
+
+To deploy manually:
+
+```bash
+git checkout prod
+npm run deploy
+```
+
+The backend is deployed on Render and accessible at: https://time-tracker-onge.onrender.com
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first
 to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
-
-## License
-
-[MIT](https://choosealicense.com/licenses/mit/)
