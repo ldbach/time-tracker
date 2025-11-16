@@ -1,27 +1,20 @@
 mod state;
 mod routes;
+mod handlers;
+mod middleware;
 
-use axum::{routing::{get, post}, Router};
+use axum::{routing::{get, post, delete}, Router, extract::Extension};
 use state::{SessionState, SharedState};
-use routes::{start_session, stop_session, get_status};
+use handlers::*;
 use std::sync::Arc;
-use axum::{
-    middleware::Next,
-    http::{Request, Response, header},
-};
-use axum::body::Body;
-use sqlx::sqlite::{SqliteConnectOptions, SqlitePool};
-use sqlx::ConnectOptions;
-use std::str::FromStr;
-use axum::extract::Extension;
 use tokio::sync::Mutex;
-use axum::routing::delete; // for DELETE routes
-use axum::extract::Path;   // for extracting path parameter
-use axum::http::Method;
+use sqlx::sqlite::{SqliteConnectOptions, SqlitePool};
+use std::str::FromStr;
 use std::env;
 
 #[tokio::main]
 async fn main() {
+    // Database setup
     // Make sure folder "data" exists before running
     std::fs::create_dir_all("data").expect("Failed to create data folder");
 
@@ -47,12 +40,13 @@ async fn main() {
     .execute(&db)
     .await
     .expect("Failed to create sessions table");
+    // End of the Database setup
 
     let state: SharedState = Arc::new(Mutex::new(SessionState {
         running: false,
         start_time: None,
         sessions: vec![],
-        db, // store the pool in the state
+        db,
     }));
 
     let app = Router::new()
@@ -62,70 +56,22 @@ async fn main() {
     .route("/status", get(get_status_handler))
     .route("/sessions", get(list_sessions_handler))
     .route("/sessions/:id", delete(delete_session_handler))
-    .layer(axum::middleware::from_fn(cors_middleware))
-    .layer(Extension(state.clone()));
+    .layer(axum::middleware::from_fn(middleware::cors_middleware)) // Adds a CORS middleware to allow requests from browsers
+    .layer(Extension(state.clone())); // passes shared state into all handlers
 
-    // Get the port from environment or fallback to 3001 locally
-    // Get the Render-assigned port, fallback to 3001 locally
+    // Get the Render-assigned port from environment or fallback to 3001 locally
     let port: u16 = env::var("PORT")
         .unwrap_or_else(|_| "3001".to_string())
         .parse()
         .expect("PORT must be a number");
-    let addr = format!("0.0.0.0:{}", port);
+
+    let addr = format!("0.0.0.0:{}", port); // listen on all network interfaces (local + LAN + public IP)
     let display_addr = format!("http://localhost:{}", port);
 
     let listener = tokio::net::TcpListener::bind(&addr)
         .await
         .unwrap();
+
     println!("Time Tracker backend running at {}", display_addr);
     axum::serve(listener, app).await.unwrap();
-}
-
-// Root handler
-async fn root() -> &'static str {
-    "Hello, Time Tracker!"
-}
-
-// Simple CORS middleware compatible with Axum 0.7
-async fn cors_middleware(req: Request<Body>, next: Next) -> Response<Body> {
-    if req.method() == Method::OPTIONS {
-        // Respond directly to preflight requests
-        let mut response = Response::new(Body::empty());
-        let headers = response.headers_mut();
-        headers.insert(header::ACCESS_CONTROL_ALLOW_ORIGIN, "*".parse().unwrap());
-        headers.insert(header::ACCESS_CONTROL_ALLOW_METHODS, "GET,POST,DELETE,OPTIONS".parse().unwrap());
-        headers.insert(header::ACCESS_CONTROL_ALLOW_HEADERS, "*".parse().unwrap());
-        return response;
-    }
-
-    let mut response = next.run(req).await;
-    let headers = response.headers_mut();
-    headers.insert(header::ACCESS_CONTROL_ALLOW_ORIGIN, "*".parse().unwrap());
-    headers.insert(header::ACCESS_CONTROL_ALLOW_METHODS, "GET,POST,DELETE,OPTIONS".parse().unwrap());
-    headers.insert(header::ACCESS_CONTROL_ALLOW_HEADERS, "*".parse().unwrap());
-    response
-}
-
-// Async handlers
-async fn stop_session_handler(Extension(state): Extension<SharedState>) -> impl axum::response::IntoResponse {
-    routes::stop_session(state).await
-}
-
-async fn start_session_handler(Extension(state): Extension<SharedState>) -> impl axum::response::IntoResponse {
-    routes::start_session(state).await
-}
-
-async fn get_status_handler(Extension(state): Extension<SharedState>) -> impl axum::response::IntoResponse {
-    routes::get_status(state).await
-}
-
-async fn list_sessions_handler(Extension(state): Extension<SharedState>) -> impl axum::response::IntoResponse {
-    routes::list_sessions(state).await
-}
-
-async fn delete_session_handler(
-    Path(id): Path<i64>,
-    Extension(state): Extension<SharedState>,
-) -> impl axum::response::IntoResponse {
-    routes::delete_session(id, state).await
 }
