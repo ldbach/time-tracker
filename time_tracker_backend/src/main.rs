@@ -18,6 +18,7 @@ use tokio::sync::Mutex;
 use axum::routing::delete; // for DELETE routes
 use axum::extract::Path;   // for extracting path parameter
 use axum::http::Method;
+use std::env;
 
 #[tokio::main]
 async fn main() {
@@ -64,10 +65,18 @@ async fn main() {
     .layer(axum::middleware::from_fn(cors_middleware))
     .layer(Extension(state.clone()));
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3001")
+    // Get the port from environment or fallback to 3001 locally
+    // Get the Render-assigned port, fallback to 3001 locally
+    let port: u16 = env::var("PORT")
+        .unwrap_or_else(|_| "3001".to_string())
+        .parse()
+        .expect("PORT must be a number");
+    let addr = format!("0.0.0.0:{}", port);
+
+    let listener = tokio::net::TcpListener::bind(&addr)
         .await
         .unwrap();
-    println!("Time Tracker backend running at http://127.0.0.1:3001");
+    println!("Time Tracker backend running at http://{}", addr);
     axum::serve(listener, app).await.unwrap();
 }
 

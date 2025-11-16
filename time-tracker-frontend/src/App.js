@@ -10,7 +10,7 @@ function App() {
   const [sessions, setSessions] = useState([]);
 
   const fetchSessions = async () => {
-    const res = await fetch("http://127.0.0.1:3001/sessions");
+    const res = await fetch("https://time-tracker-onge.onrender.com/sessions");
     const data = await res.json();
 
     // Map backend fields to frontend expected fields
@@ -51,7 +51,7 @@ function App() {
 
   // Load initial status from backend
   useEffect(() => {
-    fetch("http://127.0.0.1:3001/status")
+    fetch("https://time-tracker-onge.onrender.com/status")
       .then(res => res.json())
       .then(data => setStatus(data));
 
@@ -75,14 +75,14 @@ function App() {
 
   // Start session
   const startSession = async () => {
-    const res = await fetch("http://127.0.0.1:3001/start", { method: "POST" });
+    const res = await fetch("https://time-tracker-onge.onrender.com/start", { method: "POST" });
     const data = await res.json();
     setStatus(data);
   };
 
   // Stop session
   const stopSession = async () => {
-    const res = await fetch("http://127.0.0.1:3001/stop", { method: "POST" });
+    const res = await fetch("https://time-tracker-onge.onrender.com/stop", { method: "POST" });
     await res.json();
 
     setStatus({
@@ -100,7 +100,7 @@ function App() {
     console.log(id);
     try {
       // Call backend to delete session
-      await fetch(`http://127.0.0.1:3001/sessions/${id}`, {
+      await fetch(`https://time-tracker-onge.onrender.com/sessions/${id}`, {
         method: "DELETE",
       });
 
