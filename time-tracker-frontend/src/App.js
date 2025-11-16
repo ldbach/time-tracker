@@ -11,7 +11,7 @@ function App() {
   };
 
   return (
-    <Router>
+    <Router basename={process.env.PUBLIC_URL}>
       <div style={{ textAlign: "center", marginTop: "50px" }}>
         {/* Navigation */}
         <nav style={{ marginBottom: "20px" }}>
