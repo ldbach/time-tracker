@@ -1,107 +1,30 @@
-import React, { useState, useEffect } from "react";
-import {
-  fetchSessions,
-  fetchStatus,
-  startSessionAPI,
-  stopSessionAPI,
-  deleteSessionAPI,
-} from "./api";
-import { formatDateTime } from "./utils/date";
-import SessionItem from "./components/SessionItem";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from "react-router-dom";
+import TimeTracker from "./pages/TimeTracker";
+import WorkflowDesign from "./pages/WorkflowDesign";
 
 function App() {
-  const BASE_URL = process.env.REACT_APP_BACKEND_URL;
-  console.log("Using backend URL:", BASE_URL);
-
-  // setStatus is a function you call when you want to change the status
-  const [status, setStatus] = useState({
-    running: false,
-    start_time: null,
-    duration_seconds: 0,
-  });
-
-  // create a session is an array and setSessions is a function to update it
-  const [sessions, setSessions] = useState([]);
-
-  // Load initial data, when the component is mounted, run once at the beginning
-  useEffect(() => {
-    const loadData = async () => {
-      const statusData = await fetchStatus();
-      setStatus(statusData);
-
-      const sessionData = await fetchSessions();
-      setSessions(sessionData);
-    };
-    loadData();
-  }, []);
-
-  // Live timer that updates every second
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setStatus(prev => {
-        // If the session is not running, do nothing
-        if (!prev.running || !prev.start_time) return prev;
-        const start = new Date(prev.start_time);
-        const now = new Date();
-        // (now - start_time) converts to milliseconds ÷ 1000 gives seconds
-        const diffSeconds = Math.floor((now - start) / 1000);
-        return { ...prev, duration_seconds: diffSeconds };
-      });
-    }, 1000);
-    
-    // Cleanup the interval on unmount
-    return () => clearInterval(interval);
-  }, []);
-
-  // Handlers
-  const startSessionHandler = async () => {
-    const data = await startSessionAPI();
-    setStatus(data);
-  };
-
-  const stopSessionHandler = async () => {
-    const data = await stopSessionAPI();
-    setStatus(data);
-
-    const updatedSessions = await fetchSessions();
-    setSessions(updatedSessions);
-  };
-
-  const deleteSessionHandler = async (id) => {
-    setSessions(prev => prev.filter(s => s.id !== id)); // update on the frontend
-    await deleteSessionAPI(id);
-
-    const updatedSessions = await fetchSessions();
-    setSessions(updatedSessions);
-  };
-
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1>Time Tracker</h1>
+    <Router>
+      <div style={{ textAlign: "center", marginTop: "50px" }}>
+        {/* Navigation */}
+        <nav style={{ marginBottom: "20px" }}>
+          <Link to="/" style={{ marginRight: "10px" }}>Time Tracker</Link>
+          <Link to="/workflow-design">Workflow Design</Link>
+        </nav>
 
-      <p>Running: {status.running ? "Yes" : "No"}</p>
-      <p>Start Time: {formatDateTime(status.start_time)}</p>
-      <p>Duration: <b>{status.duration_seconds}</b> seconds</p>
+        <Routes>
+          {/* Default route */}
+          <Route path="/" element={<TimeTracker />} />
 
-      <button onClick={startSessionHandler} style={{ marginRight: "10px" }}>
-        Start
-      </button>
-      <button onClick={stopSessionHandler}>Stop</button>
+          {/* Workflow route */}
+          <Route path="/workflow-design" element={<WorkflowDesign />} />
 
-      <hr />
-
-      <h2>Completed Sessions</h2>
-      <ul>
-        {sessions.map((s, idx) => (
-          <SessionItem 
-            key={s.id} 
-            session={s} 
-            idx={idx} 
-            onDelete={deleteSessionHandler} 
-          />
-        ))}
-      </ul>
-    </div>
+          {/* Redirect unknown routes to default */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
