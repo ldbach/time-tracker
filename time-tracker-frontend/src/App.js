@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
 import {
+  fetchSessions,
+  fetchStatus,
+  startSessionAPI,
+  stopSessionAPI,
+  deleteSessionAPI,
+} from "./api";
+import {
   formatDateTime,
   formatTime,
   formatDate,
@@ -18,43 +25,17 @@ function App() {
 
   const [sessions, setSessions] = useState([]);
 
-  const fetchSessions = async () => {
-    const res = await fetch(`${BASE_URL}/sessions`);
-    const data = await res.json();
-
-    // Map backend fields to frontend expected fields
-    const mapped = data.map(s => ({
-      id: s.id,
-      start: s.start_time,
-      end: s.end_time,
-      duration: s.duration_seconds,
-    }));
-
-    setSessions(mapped); // data should be an array of sessions from backend
-  };
-
-  // Load initial status from backend
+  // Load initial data
   useEffect(() => {
-    const fetchSessions = async () => {
-      const res = await fetch(`${BASE_URL}/sessions`);
-      const data = await res.json();
+    const loadData = async () => {
+      const statusData = await fetchStatus();
+      setStatus(statusData);
 
-      const mapped = data.map(s => ({
-        id: s.id,
-        start: s.start_time,
-        end: s.end_time,
-        duration: s.duration_seconds,
-      }));
-
-      setSessions(mapped);
+      const sessionData = await fetchSessions();
+      setSessions(sessionData);
     };
-
-    fetch(`${BASE_URL}/status`)
-      .then(res => res.json())
-      .then(data => setStatus(data));
-
-    fetchSessions();
-  }, [BASE_URL]);
+    loadData();
+  }, []);
 
   // Live timer that updates every second
   useEffect(() => {
@@ -71,42 +52,26 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Start session
-  const startSession = async () => {
-    const res = await fetch(`${BASE_URL}/start`, { method: "POST" });
-    const data = await res.json();
+  // Handlers
+  const startSessionHandler = async () => {
+    const data = await startSessionAPI();
     setStatus(data);
   };
 
-  // Stop session
-  const stopSession = async () => {
-    const res = await fetch(`${BASE_URL}/stop`, { method: "POST" });
-    await res.json();
+  const stopSessionHandler = async () => {
+    const data = await stopSessionAPI();
+    setStatus(data);
 
-    setStatus({
-      running: false,
-      start_time: null,
-      duration_seconds: 0,
-    });
-
-    fetchSessions(); // refresh completed sessions from backend
+    const updatedSessions = await fetchSessions();
+    setSessions(updatedSessions);
   };
 
-  // Delete session from backend and frontend
-  const deleteSession = async (id) => {
-    setSessions(prev => prev.filter(s => s.id !== id)); // remove immediately
-    console.log(id);
-    try {
-      // Call backend to delete session
-      await fetch(`${BASE_URL}/sessions/${id}`, {
-        method: "DELETE",
-      });
+  const deleteSessionHandler = async (id) => {
+    setSessions(prev => prev.filter(s => s.id !== id)); // optimistic update
+    await deleteSessionAPI(id);
 
-      // Refresh sessions from backend
-      fetchSessions();
-    } catch (err) {
-      console.error("Failed to delete session:", err);
-    }
+    const updatedSessions = await fetchSessions();
+    setSessions(updatedSessions);
   };
 
   return (
@@ -117,10 +82,10 @@ function App() {
       <p>Start Time: {formatDateTime(status.start_time)}</p>
       <p>Duration: <b>{status.duration_seconds}</b> seconds</p>
 
-      <button onClick={startSession} style={{ marginRight: "10px" }}>
+      <button onClick={startSessionHandler} style={{ marginRight: "10px" }}>
         Start
       </button>
-      <button onClick={stopSession}>Stop</button>
+      <button onClick={stopSessionHandler}>Stop</button>
 
       <hr />
 
@@ -133,7 +98,7 @@ function App() {
             Start: {formatTime(s.start)}<br />
             End: {formatTime(s.end)}<br />
             Duration: <b>{s.duration}</b> seconds<br />
-            <button onClick={() => deleteSession(s.id)}>Delete</button>
+            <button onClick={() => deleteSessionHandler(s.id)}>Delete</button>
           </li>
         ))}
       </ul>
