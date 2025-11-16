@@ -13,15 +13,17 @@ function App() {
   const BASE_URL = process.env.REACT_APP_BACKEND_URL;
   console.log("Using backend URL:", BASE_URL);
 
+  // setStatus is a function you call when you want to change the status
   const [status, setStatus] = useState({
     running: false,
     start_time: null,
     duration_seconds: 0,
   });
 
+  // create a session is an array and setSessions is a function to update it
   const [sessions, setSessions] = useState([]);
 
-  // Load initial data
+  // Load initial data, when the component is mounted, run once at the beginning
   useEffect(() => {
     const loadData = async () => {
       const statusData = await fetchStatus();
@@ -37,14 +39,17 @@ function App() {
   useEffect(() => {
     const interval = setInterval(() => {
       setStatus(prev => {
+        // If the session is not running, do nothing
         if (!prev.running || !prev.start_time) return prev;
         const start = new Date(prev.start_time);
         const now = new Date();
+        // (now - start_time) converts to milliseconds ÷ 1000 gives seconds
         const diffSeconds = Math.floor((now - start) / 1000);
         return { ...prev, duration_seconds: diffSeconds };
       });
     }, 1000);
     
+    // Cleanup the interval on unmount
     return () => clearInterval(interval);
   }, []);
 
@@ -63,7 +68,7 @@ function App() {
   };
 
   const deleteSessionHandler = async (id) => {
-    setSessions(prev => prev.filter(s => s.id !== id)); // optimistic update
+    setSessions(prev => prev.filter(s => s.id !== id)); // update on the frontend
     await deleteSessionAPI(id);
 
     const updatedSessions = await fetchSessions();

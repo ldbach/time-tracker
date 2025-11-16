@@ -1,4 +1,4 @@
-// Format full date and time
+// Format full date and time as for example "2/9/2025, 15:32:10"
 export const formatDateTime = (isoString) => {
   if (!isoString) return "-";
   const date = new Date(isoString);

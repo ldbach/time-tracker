@@ -1,6 +1,6 @@
 const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Fetch all sessions
+// Get all completed sessions
 export const fetchSessions = async () => {
   const res = await fetch(`${BASE_URL}/sessions`);
   const data = await res.json();
@@ -12,7 +12,7 @@ export const fetchSessions = async () => {
   }));
 };
 
-// Fetch current status
+// Get the current running session status
 export const fetchStatus = async () => {
   const res = await fetch(`${BASE_URL}/status`);
   const data = await res.json();

@@ -1,6 +1,7 @@
 import React from "react";
 import { formatDate, formatTime, formatWeekday } from "../utils/date";
 
+// idx is UI numbering, session.id is a stable backend ID
 export default function SessionItem({ session, idx, onDelete }) {
   return (
     <li style={{ marginBottom: "10px" }}>
