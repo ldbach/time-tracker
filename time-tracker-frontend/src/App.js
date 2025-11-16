@@ -6,12 +6,8 @@ import {
   stopSessionAPI,
   deleteSessionAPI,
 } from "./api";
-import {
-  formatDateTime,
-  formatTime,
-  formatDate,
-  formatWeekday,
-} from "./utils/date";
+import { formatDateTime } from "./utils/date";
+import SessionItem from "./components/SessionItem";
 
 function App() {
   const BASE_URL = process.env.REACT_APP_BACKEND_URL;
@@ -92,14 +88,12 @@ function App() {
       <h2>Completed Sessions</h2>
       <ul>
         {sessions.map((s, idx) => (
-          <li key={idx} style={{ marginBottom: "10px" }}>
-            <b>Session {idx + 1}</b><br />
-            Date: {formatDate(s.start)} ({formatWeekday(s.start)})<br />
-            Start: {formatTime(s.start)}<br />
-            End: {formatTime(s.end)}<br />
-            Duration: <b>{s.duration}</b> seconds<br />
-            <button onClick={() => deleteSessionHandler(s.id)}>Delete</button>
-          </li>
+          <SessionItem 
+            key={s.id} 
+            session={s} 
+            idx={idx} 
+            onDelete={deleteSessionHandler} 
+          />
         ))}
       </ul>
     </div>
