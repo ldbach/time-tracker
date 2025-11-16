@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, NavLink, Navigate } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, NavLink, Navigate } from "react-router-dom";
 import TimeTracker from "./pages/TimeTracker";
 import WorkflowDesign from "./pages/WorkflowDesign";
 
@@ -11,7 +11,7 @@ function App() {
   };
 
   return (
-    <Router basename={process.env.PUBLIC_URL}>
+    <Router>
       <div style={{ textAlign: "center", marginTop: "50px" }}>
         {/* Navigation */}
         <nav style={{ marginBottom: "20px" }}>
