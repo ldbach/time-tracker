@@ -25,6 +25,8 @@ jobs:
       - name: Build the app
         run: npm run build
         working-directory: ./time-tracker-frontend
+        env:
+          REACT_APP_BACKEND_URL: https://time-tracker-onge.onrender.com/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
