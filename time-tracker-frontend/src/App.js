@@ -53,12 +53,26 @@ function App() {
 
   // Load initial status from backend
   useEffect(() => {
+    const fetchSessions = async () => {
+      const res = await fetch(`${BASE_URL}/sessions`);
+      const data = await res.json();
+
+      const mapped = data.map(s => ({
+        id: s.id,
+        start: s.start_time,
+        end: s.end_time,
+        duration: s.duration_seconds,
+      }));
+
+      setSessions(mapped);
+    };
+
     fetch(`${BASE_URL}/status`)
       .then(res => res.json())
       .then(data => setStatus(data));
 
-    fetchSessions(); // load completed sessions from backend
-  }, []);
+    fetchSessions();
+  }, [BASE_URL]);
 
   // Live timer that updates every second
   useEffect(() => {
