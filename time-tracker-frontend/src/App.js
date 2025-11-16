@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 function App() {
+  const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+
   const [status, setStatus] = useState({
     running: false,
     start_time: null,
@@ -10,7 +12,7 @@ function App() {
   const [sessions, setSessions] = useState([]);
 
   const fetchSessions = async () => {
-    const res = await fetch("https://time-tracker-onge.onrender.com/sessions");
+    const res = await fetch(`${BASE_URL}/sessions`);
     const data = await res.json();
 
     // Map backend fields to frontend expected fields
@@ -51,7 +53,7 @@ function App() {
 
   // Load initial status from backend
   useEffect(() => {
-    fetch("https://time-tracker-onge.onrender.com/status")
+    fetch(`${BASE_URL}/status`)
       .then(res => res.json())
       .then(data => setStatus(data));
 
@@ -75,14 +77,14 @@ function App() {
 
   // Start session
   const startSession = async () => {
-    const res = await fetch("https://time-tracker-onge.onrender.com/start", { method: "POST" });
+    const res = await fetch(`${BASE_URL}/start`, { method: "POST" });
     const data = await res.json();
     setStatus(data);
   };
 
   // Stop session
   const stopSession = async () => {
-    const res = await fetch("https://time-tracker-onge.onrender.com/stop", { method: "POST" });
+    const res = await fetch(`${BASE_URL}/stop`, { method: "POST" });
     await res.json();
 
     setStatus({
@@ -100,7 +102,7 @@ function App() {
     console.log(id);
     try {
       // Call backend to delete session
-      await fetch(`https://time-tracker-onge.onrender.com/sessions/${id}`, {
+      await fetch(`${BASE_URL}/sessions/${id}`, {
         method: "DELETE",
       });
 

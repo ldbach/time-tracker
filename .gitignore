@@ -11,9 +11,6 @@
 /time-tracker-frontend/coverage
 # misc
 /time-tracker-frontend/.env.local
-/time-tracker-frontend/.env.development.local
-/time-tracker-frontend/.env.test.local
-/time-tracker-frontend/.env.production.local
 
 /time-tracker-frontend/npm-debug.log*
 /time-tracker-frontend/yarn-debug.log*

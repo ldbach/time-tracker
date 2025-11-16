@@ -72,11 +72,12 @@ async fn main() {
         .parse()
         .expect("PORT must be a number");
     let addr = format!("0.0.0.0:{}", port);
+    let display_addr = format!("http://localhost:{}", port);
 
     let listener = tokio::net::TcpListener::bind(&addr)
         .await
         .unwrap();
-    println!("Time Tracker backend running at http://{}", addr);
+    println!("Time Tracker backend running at {}", display_addr);
     axum::serve(listener, app).await.unwrap();
 }
 
