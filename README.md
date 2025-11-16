@@ -56,13 +56,13 @@ npm start
 
 ## Deployment
 
-The frontend is deployed automatically to GitHub Pages from the prod branch.
+The frontend is deployed automatically to GitHub Pages from the main branch.
 Visit your app at: https://ldbach.github.io/time-tracker/
 
 To deploy manually:
 
 ```bash
-git checkout prod
+git checkout main
 npm run deploy
 ```
 
