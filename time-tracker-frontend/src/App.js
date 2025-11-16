@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 function App() {
   const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+  console.log("Using backend URL:", BASE_URL);
 
   const [status, setStatus] = useState({
     running: false,
